@@ -6,10 +6,10 @@ import java.util.Collections;
 import java.util.List;
 
 public class LeaderElection implements Watcher {
-    public static final String ELECTION_ADDRESS = "/election";
-    public final ZooKeeper zooKeeper;
-    public String zNodeName;
-    public final OnElectionCallback onElectionCallback;
+    private static final String ELECTION_ADDRESS = "/election";
+    private final ZooKeeper zooKeeper;
+    private String zNodeName;
+    private final OnElectionCallback onElectionCallback;
 
     public LeaderElection(ZooKeeper zooKeeper, OnElectionCallback onElectionCallback){
         this.zooKeeper = zooKeeper;

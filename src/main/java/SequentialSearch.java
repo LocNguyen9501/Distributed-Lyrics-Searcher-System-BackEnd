@@ -19,10 +19,10 @@ public class SequentialSearch {
                 .stream()
                 .map(documentName -> LYRICS_DIRECTORY+"/"+documentName)
                 .collect(Collectors.toList());
-        findtheSong(documents, terms);
+        findTheSong(documents, terms);
     }
 
-    public static void findtheSong(List<String> documents, List<String> terms) throws FileNotFoundException {
+    public static void findTheSong(List<String> documents, List<String> terms) throws FileNotFoundException {
         Map<String, DocumentData> documentResults = new HashMap<>();
 
         for(String document : documents){

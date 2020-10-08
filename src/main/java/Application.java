@@ -22,8 +22,9 @@ public class Application implements Watcher {
         Application app = new Application();
         app.connectToZookeeper();
 
-        ServiceRegistry serviceRegistry = new ServiceRegistry(app.zooKeeper);
-        AfterElectionAction afterElectionAction = new AfterElectionAction(serviceRegistry, port);
+        ServiceRegistry workerServiceRegistry = new ServiceRegistry(app.zooKeeper, ServiceRegistry.WORKER_SERVICE_REGISTRY);
+        ServiceRegistry coordinatorServiceRegistry = new ServiceRegistry(app.zooKeeper, ServiceRegistry.COORDINATOR_SERVICE_REGISTRY);
+        AfterElectionAction afterElectionAction = new AfterElectionAction(workerServiceRegistry, coordinatorServiceRegistry, port);
 
         LeaderElection leaderElection = new LeaderElection(app.zooKeeper, afterElectionAction);
         leaderElection.volunteerForLeaderShip();

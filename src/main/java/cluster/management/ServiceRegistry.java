@@ -8,13 +8,16 @@ import java.util.Collections;
 import java.util.List;
 
 public class ServiceRegistry implements Watcher {
-    public  final String SERVICE_REGISTRY_ADDRESS = "/service_registry";
-    public final ZooKeeper zooKeeper;
-    public String currentzNodeFullPath;
-    public List<String> allChildrenAddresses;
+    public static final String WORKER_SERVICE_REGISTRY = "/worker_service_registry";
+    public static final String COORDINATOR_SERVICE_REGISTRY = "/coordinator_service_registry";
+    private final String SERVICE_REGISTRY_ADDRESS;
+    private final ZooKeeper zooKeeper;
+    private String currentzNodeFullPath;
+    private List<String> allChildrenAddresses;
 
-    public ServiceRegistry(ZooKeeper zooKeeper) throws KeeperException, InterruptedException {
+    public ServiceRegistry(ZooKeeper zooKeeper, String serviceAdresss) throws KeeperException, InterruptedException {
         this.zooKeeper = zooKeeper;
+        this.SERVICE_REGISTRY_ADDRESS = serviceAdresss;
         createServiceRegistry();
     }
 
@@ -25,10 +28,14 @@ public class ServiceRegistry implements Watcher {
     }
 
     public void registerToCluster(String data) throws KeeperException, InterruptedException {
+        if(currentzNodeFullPath != null){
+            System.out.println("Already registered with service registry!");
+            return;
+        }
         String prefix = SERVICE_REGISTRY_ADDRESS+"/n_";
         currentzNodeFullPath = zooKeeper.create(prefix, data.getBytes(), ZooDefs.Ids.OPEN_ACL_UNSAFE,
                 CreateMode.EPHEMERAL_SEQUENTIAL);
-        System.out.println("Registered successfully with service registry!");
+        System.out.println("Registered successfully with service registry! with name "+currentzNodeFullPath);
     }
 
     public void unregisterFromCluster() throws KeeperException, InterruptedException {
@@ -54,6 +61,11 @@ public class ServiceRegistry implements Watcher {
         }
         this.allChildrenAddresses = Collections.unmodifiableList(childrenAddresses);
         System.out.println("Worker addresses are: "+ this.allChildrenAddresses);
+    }
+
+    public List<String> getAllChildrenAddresses() throws KeeperException, InterruptedException {
+        updateAddresses();
+        return this.allChildrenAddresses;
     }
 
     @Override
